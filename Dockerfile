@@ -1,30 +1,28 @@
-# Estágio 1: Builder
-FROM python:3.12-slim AS builder
+FROM python:3.12-slim
 
 # Instala o uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+# Instala dependências do sistema para Pillow
+RUN apt-get update && apt-get install -y \
+    libjpeg-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
+# Copia arquivos de dependência
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
 
-# Estágio 2: Final
-FROM python:3.12-slim
+# Instala as dependências no sistema do container (evita problemas de PATH com venv)
+RUN uv pip install --system --no-cache -r pyproject.toml
 
-WORKDIR /app
-
-# Configurações do ambiente virtual
-ENV VIRTUAL_ENV=/app/.venv
-ENV PATH="/app/.venv/bin:$PATH"
-
-# Copia o ambiente virtual do builder
-COPY --from=builder /app/.venv /app/.venv
+# Copia o código
 COPY . .
 
-# Coleta arquivos estáticos
-RUN python manage.py collectstatic --noinput
+# Coleta arquivos estáticos (usando uma chave temporária para a build)
+RUN SECRET_KEY=build-key python manage.py collectstatic --noinput
 
-# Porta padrão do Django
 EXPOSE 8000
 
 # Executa com Gunicorn para produção
