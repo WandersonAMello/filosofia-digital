@@ -12,11 +12,14 @@ RUN uv sync --frozen --no-dev
 FROM python:3.12-slim
 
 WORKDIR /app
+
+# Configurações do ambiente virtual
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Copia o ambiente virtual do builder
 COPY --from=builder /app/.venv /app/.venv
 COPY . .
-
-# Garante que o ambiente virtual seja usado
-ENV PATH="/app/.venv/bin:$PATH"
 
 # Coleta arquivos estáticos
 RUN python manage.py collectstatic --noinput
