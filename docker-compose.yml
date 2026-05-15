@@ -5,6 +5,7 @@ services:
     volumes:
       - ./db.sqlite3:/app/db.sqlite3
       - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
     env_file:
       - .env
     ports:

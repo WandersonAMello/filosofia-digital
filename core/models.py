@@ -22,6 +22,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     content = models.TextField()
+    image = models.ImageField(upload_to='blog/%Y/%m/%d/', blank=True, null=True, verbose_name="Imagem de Capa")
     summary = models.TextField(blank=True, help_text="Um breve resumo da postagem para a listagem.")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='posts', blank=True)

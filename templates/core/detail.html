@@ -5,6 +5,11 @@
 {% block content %}
 <article class="post-detail">
     <header class="post-header">
+        {% if post.image %}
+        <div class="post-hero">
+            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+        </div>
+        {% endif %}
         <h1 class="post-title">{{ post.title }}</h1>
         <div class="post-meta">
             <span class="post-date">Publicado em {{ post.created_at|date:"d \d\e F, Y" }}</span>
