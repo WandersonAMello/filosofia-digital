@@ -1,12 +1,14 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 # Instala o uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Instala dependências do sistema para Pillow
+# Instala dependências do sistema para Pillow e PostgreSQL
 RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     zlib1g-dev \
+    libpq-dev \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

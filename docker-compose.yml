@@ -1,17 +1,35 @@
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: sansocrates_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=filosofia_db
+      - POSTGRES_USER=filosofia_user
+      - POSTGRES_PASSWORD=filosofia_pass
+    networks:
+      - sansocrates_network
+
   web:
     build: .
     container_name: sansocrates_blog
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
     env_file:
       - .env
     ports:
       - "8000:8000"
+    depends_on:
+      - db
     restart: always
+    networks:
+      - sansocrates_network
 
 networks:
-  default:
+  sansocrates_network:
     name: sansocrates_network
+
+volumes:
+  postgres_data:

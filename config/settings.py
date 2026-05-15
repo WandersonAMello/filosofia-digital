@@ -67,10 +67,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db('DATABASE_URL', default=f"postgres://{env('POSTGRES_USER')}:{env('POSTGRES_PASSWORD')}@{env('DB_HOST')}:{env('DB_PORT')}/{env('POSTGRES_DB')}")
 }
 
 # Password validation
