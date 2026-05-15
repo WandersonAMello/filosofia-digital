@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Filosofia Digital{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-grid">
+            <h1 class="logo"><a href="{% url 'core:post_list' %}">Filosofia Digital</a></h1>
+            
+            <nav class="main-nav">
+                <form action="{% url 'core:post_search' %}" method="get" class="search-form">
+                    <input type="text" name="q" placeholder="Buscar pensamento..." value="{{ search_query|default:'' }}">
+                </form>
+            </nav>
+        </div>
+        <div class="container">
+            <nav class="categories-nav">
+                <a href="{% url 'core:post_list' %}" class="cat-link {% if not current_category %}active{% endif %}">Todos</a>
+                {% for cat in categories %}
+                <a href="{% url 'core:post_list_by_category' cat.slug %}" class="cat-link {% if current_category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+                {% endfor %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2026 Filosofia Digital. Criado com propósito.</p>
+        </div>
+    </footer>
+</body>
+</html>

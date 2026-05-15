@@ -1,0 +1,239 @@
+:root {
+    --bg-color: #fcfaf7;
+    --card-bg: #ffffff;
+    --text-color: #1a1a1a;
+    --text-muted: #555555;
+    --accent-color: #4a6741;
+    --accent-hover: #3d5635;
+    --border-color: #e0e0e0;
+    --serif-font: 'Playfair Display', serif;
+    --sans-font: 'Inter', sans-serif;
+    --max-width: 800px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--serif-font);
+    line-height: 1.8;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+.main-header {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(252, 250, 247, 0.85);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.logo {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: var(--sans-font);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.logo a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.search-form input {
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-family: var(--sans-font);
+    font-size: 0.85rem;
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.search-form input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    width: 300px;
+    box-shadow: 0 0 10px rgba(74, 103, 65, 0.1);
+}
+
+.categories-nav {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+}
+
+.cat-link {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-family: var(--sans-font);
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+.cat-link:hover, .cat-link.active {
+    color: var(--accent-color);
+}
+
+/* Post List */
+.posts-list {
+    padding: 60px 0;
+}
+
+.filter-title {
+    font-family: var(--sans-font);
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 50px;
+    border-left: 3px solid var(--accent-color);
+    padding-left: 15px;
+}
+
+.post-item {
+    margin-bottom: 80px;
+    animation: fadeIn 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.post-title {
+    font-size: 2.2rem;
+    margin: 0 0 10px;
+    line-height: 1.2;
+}
+
+.post-title a {
+    text-decoration: none;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+.post-title a:hover {
+    color: var(--accent-color);
+}
+
+.post-meta {
+    font-family: var(--sans-font);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.post-summary {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.read-more {
+    font-family: var(--sans-font);
+    text-decoration: none;
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.read-more:hover {
+    border-bottom-color: var(--accent-color);
+}
+
+/* Post Detail */
+.post-detail {
+    padding: 80px 0;
+}
+
+.post-header {
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.post-header .post-title {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+}
+
+.post-content {
+    font-size: 1.25rem;
+}
+
+.post-content p {
+    margin-bottom: 30px;
+}
+
+.post-footer {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-color);
+}
+
+.back-link a {
+    font-family: var(--sans-font);
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Footer */
+.main-footer {
+    padding: 60px 0;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    font-family: var(--sans-font);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 60px;
+    font-family: var(--sans-font);
+}
+
+.pagination a {
+    text-decoration: none;
+    color: var(--accent-color);
+    font-weight: 600;
+}

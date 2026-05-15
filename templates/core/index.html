@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Início | Filosofia Digital{% endblock %}
+
+{% block content %}
+<div class="posts-list">
+    {% if search_query %}
+    <h2 class="filter-title">Resultados para: "{{ search_query }}"</h2>
+    {% elif current_category %}
+    <h2 class="filter-title">Explorando: {{ current_category|title }}</h2>
+    {% endif %}
+    {% for post in posts %}
+    <article class="post-item">
+        <header>
+            <h2 class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+            <div class="post-meta">
+                <span class="post-date">{{ post.created_at|date:"d \d\e F, Y" }}</span>
+                {% if post.category %}
+                <span class="post-category">em {{ post.category.name }}</span>
+                {% endif %}
+            </div>
+        </header>
+        <div class="post-summary">
+            {{ post.summary|truncatewords:40 }}
+        </div>
+        <a href="{{ post.get_absolute_url }}" class="read-more">Ler mais &rarr;</a>
+    </article>
+    {% empty %}
+    <p class="no-posts">Nenhuma postagem publicada ainda. Em breve, novos pensamentos.</p>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">&larr; Anterior</a>
+    {% endif %}
+    
+    <span class="current-page">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Próxima &rarr;</a>
+    {% endif %}
+</nav>
+{% endif %}
+{% endblock %}
