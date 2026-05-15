@@ -199,6 +199,23 @@ body {
     margin-bottom: 30px;
 }
 
+.post-content blockquote {
+    border-left: 4px solid var(--accent-color);
+    padding-left: 30px;
+    margin: 40px 0;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+.post-content ul, .post-content ol {
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+.post-content li {
+    margin-bottom: 10px;
+}
+
 /* Imagens */
 .post-thumbnail {
     margin-bottom: 25px;

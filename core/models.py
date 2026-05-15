@@ -1,6 +1,9 @@
+import math
+import markdown
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils.html import strip_tags
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -36,6 +39,14 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def reading_time(self):
+        words = len(strip_tags(self.content).split())
+        minutes = math.ceil(words / 200)
+        return minutes if minutes > 0 else 1
+
+    def get_markdown_content(self):
+        return markdown.markdown(self.content, extensions=['extra', 'codehilite', 'toc'])
 
     def get_absolute_url(self):
         return reverse('core:post_detail', args=[self.slug])

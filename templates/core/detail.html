@@ -13,6 +13,7 @@
         <h1 class="post-title">{{ post.title }}</h1>
         <div class="post-meta">
             <span class="post-date">Publicado em {{ post.created_at|date:"d \d\e F, Y" }}</span>
+            <span class="post-reading-time">&bull; {{ post.reading_time }} min de leitura</span>
             {% if post.category %}
             <span class="post-category">em {{ post.category.name }}</span>
             {% endif %}
@@ -20,7 +21,7 @@
     </header>
     
     <div class="post-content">
-        {{ post.content|linebreaks }}
+        {{ post.get_markdown_content|safe }}
     </div>
     
     <footer class="post-footer">
