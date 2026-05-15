@@ -18,18 +18,20 @@ Este projeto segue a metodologia do `github/spec-kit`, onde cada funcionalidade 
 - **Frontend**: Vanilla CSS (Rich Aesthetics)
 - **Deployment**: Docker & Docker Compose
 
-## 📦 Como rodar localmente
+## 📦 Como rodar localmente (com Python/uv)
 1. Certifique-se de ter o `uv` instalado.
 2. Clone o repositório.
 3. Crie o arquivo `.env` baseado no exemplo.
-4. Rode as migrações:
+4. Rode as migrações: `uv run python manage.py migrate`
+5. Inicie o servidor: `uv run python manage.py runserver`
+
+## 🐳 Como rodar com Docker (Recomendado para Produção)
+1. Crie o arquivo `.env`.
+2. Suba o container:
    ```bash
-   uv run python manage.py migrate
+   docker-compose up --build -d
    ```
-5. Inicie o servidor:
-   ```bash
-   uv run python manage.py runserver
-   ```
+3. Acesse em `http://localhost:8000`.
 
 ---
 *Desenvolvido em parceria com Antigravity (AI Agent).*

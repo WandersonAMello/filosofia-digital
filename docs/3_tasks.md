@@ -2,7 +2,7 @@
 
 ## Fase 1: Setup & Core [CONCLUÍDO]
 - [x] Inicializar projeto Django com `uv`.
-- [x] Criar app `core` (ajustado de `blog`).
+- [x] Criar app `core`.
 - [x] Configurar `settings.py` para segurança e arquivos estáticos.
 - [x] Implementar CSS global com estética de filosofia.
 
@@ -17,9 +17,14 @@
 - [x] Adicionar micro-animações.
 - [x] Navegação responsiva por categoria.
 
-## Fase 4: Preparação para Produção [EM PROGRESSO]
+## Fase 4: Produção & GitHub [CONCLUÍDO]
 - [x] Documentar domínio `sansocrates.online`.
-- [x] Auditoria de `.gitignore` e ambiente.
-- [ ] Criar `Dockerfile` multi-stage.
-- [ ] Criar `docker-compose.yml`.
+- [x] Auditoria de `.gitignore`.
+- [x] Primeiro commit realizado.
+- [x] Criar `Dockerfile` multi-stage.
+- [x] Criar `docker-compose.yml`.
+
+## Fase 5: Implantação [EM PROGRESSO]
+- [ ] Push final para o GitHub (resolver timeout).
+- [ ] Testar build do Docker localmente.
 - [ ] Auditoria final de segurança.
