@@ -25,6 +25,9 @@
                 <form action="{% url 'core:post_search' %}" method="get" class="search-form">
                     <input type="text" name="q" placeholder="Buscar pensamento..." value="{{ search_query|default:'' }}">
                 </form>
+                {% if user.is_staff %}
+                <a href="{% url 'core:painel_dashboard' %}" class="author-nav-link">Painel ✦</a>
+                {% endif %}
             </nav>
         </div>
         <div class="container">
@@ -37,13 +40,31 @@
         </div>
     </header>
 
+    {% if messages %}
+    <div class="messages-container" id="messages-container">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}" role="alert">
+            {{ message }}
+            <button class="message-close" onclick="this.parentElement.remove()" aria-label="Fechar">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <main class="container">
         {% block content %}{% endblock %}
     </main>
 
     <footer class="main-footer">
-        <div class="container">
+        <div class="container footer-content">
             <p>&copy; 2026 Filosofia Digital. Criado com propósito.</p>
+            <div class="footer-links">
+                {% if user.is_staff %}
+                <a href="{% url 'core:painel_dashboard' %}" class="footer-author-link">Painel do Autor ✦</a>
+                {% else %}
+                <a href="{% url 'core:login' %}" class="footer-author-link">Área do Autor</a>
+                {% endif %}
+            </div>
         </div>
     </footer>
 </body>

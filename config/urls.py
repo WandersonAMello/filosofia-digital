@@ -18,10 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('core.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("core.urls")),
+    # Redireciona /login/ (URL padrão do Django) para a view de login da core
+    path("login/", RedirectView.as_view(pattern_name="core:login", permanent=False), name="login"),
+    path("logout/", RedirectView.as_view(pattern_name="core:logout", permanent=False), name="logout"),
 ]
 
 if settings.DEBUG:

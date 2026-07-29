@@ -1,0 +1,125 @@
+{% extends "core/painel/base_painel.html" %}
+
+{% block title %}Dashboard | Filosofia Digital{% endblock %}
+{% block nav_posts %}active{% endblock %}
+
+{% block content %}
+<div class="painel-page">
+
+    <div class="painel-page-header">
+        <div>
+            <h1 class="painel-page-title">Seus Posts</h1>
+            <p class="painel-page-subtitle">Gerencie seus ensaios e rascunhos</p>
+        </div>
+        <a href="{% url 'core:painel_post_criar' %}" class="btn-primary" id="btn-novo-post">+ Novo Post</a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-number">{{ total_publicados }}</span>
+            <span class="stat-label">Publicados</span>
+        </div>
+        <div class="stat-card stat-card--muted">
+            <span class="stat-number">{{ total_rascunhos }}</span>
+            <span class="stat-label">Rascunhos</span>
+        </div>
+        <div class="stat-card stat-card--accent">
+            <span class="stat-number">{{ page_obj.paginator.count }}</span>
+            <span class="stat-label">Total</span>
+        </div>
+    </div>
+
+    <!-- Filter & Search Controls -->
+    <div class="painel-filter-bar">
+        <div class="filter-tabs">
+            <a href="?status=all{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-tab {% if current_status == 'all' or not current_status %}active{% endif %}">
+                Todos
+            </a>
+            <a href="?status=published{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-tab {% if current_status == 'published' %}active{% endif %}">
+                Publicados ({{ total_publicados }})
+            </a>
+            <a href="?status=draft{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-tab {% if current_status == 'draft' %}active{% endif %}">
+                Rascunhos ({{ total_rascunhos }})
+            </a>
+        </div>
+        <form method="get" class="painel-search-form">
+            {% if current_status and current_status != 'all' %}
+            <input type="hidden" name="status" value="{{ current_status }}">
+            {% endif %}
+            <div class="search-input-wrapper">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Buscar por título ou conteúdo..." class="painel-search-input">
+                {% if search_query %}
+                <a href="?status={{ current_status|default:'all' }}" class="clear-search-btn" title="Limpar busca">✕</a>
+                {% endif %}
+                <button type="submit" class="btn-secondary btn-search">Buscar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Posts Table -->
+    {% if posts %}
+    <div class="posts-table-wrapper">
+        <table class="posts-table" id="posts-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Categoria</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr class="post-row">
+                    <td class="post-row-title">
+                        <a href="{{ post.get_absolute_url }}" target="_blank" class="post-link">
+                            {{ post.title }}
+                        </a>
+                    </td>
+                    <td class="post-row-cat">
+                        {% if post.category %}{{ post.category.name }}{% else %}<span class="text-muted">—</span>{% endif %}
+                    </td>
+                    <td>
+                        <span class="status-badge status-badge--{{ post.status }}">
+                            {% if post.status == 'published' %}Publicado{% else %}Rascunho{% endif %}
+                        </span>
+                    </td>
+                    <td class="post-row-date">{{ post.created_at|date:"d/m/Y" }}</td>
+                    <td class="post-row-actions">
+                        <a href="{% url 'core:painel_post_editar' post.slug %}" class="btn-action btn-edit" title="Editar">Editar</a>
+                        <a href="{% url 'core:painel_post_deletar' post.slug %}" class="btn-action btn-delete" title="Deletar">Deletar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="painel-pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&status={{ current_status }}&q={{ search_query }}" class="btn-page">← Anterior</a>
+        {% endif %}
+        <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&status={{ current_status }}&q={{ search_query }}" class="btn-page">Próxima →</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        {% if search_query or current_status != 'all' %}
+        <p class="empty-state-text">Nenhum post encontrado para os filtros aplicados.</p>
+        <a href="{% url 'core:painel_dashboard' %}" class="btn-secondary">Limpar filtros</a>
+        {% else %}
+        <p class="empty-state-text">Você ainda não tem nenhum post.</p>
+        <a href="{% url 'core:painel_post_criar' %}" class="btn-primary">Escrever agora</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

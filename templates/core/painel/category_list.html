@@ -1,0 +1,49 @@
+{% extends "core/painel/base_painel.html" %}
+
+{% block title %}Categorias | Filosofia Digital{% endblock %}
+{% block nav_cats %}active{% endblock %}
+
+{% block content %}
+<div class="painel-page">
+    <div class="painel-page-header">
+        <div>
+            <h1 class="painel-page-title">Categorias</h1>
+            <p class="painel-page-subtitle">Organize seus ensaios por ramo filosófico</p>
+        </div>
+        <a href="{% url 'core:painel_category_criar' %}" class="btn-primary" id="btn-nova-categoria">+ Nova Categoria</a>
+    </div>
+
+    {% if categories %}
+    <div class="posts-table-wrapper">
+        <table class="posts-table" id="categories-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Slug</th>
+                    <th>Posts</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr>
+                    <td><strong>{{ cat.name }}</strong></td>
+                    <td><code>{{ cat.slug }}</code></td>
+                    <td>{{ cat.posts.count }}</td>
+                    <td class="post-row-actions">
+                        <a href="{% url 'core:painel_category_editar' cat.pk %}" class="btn-action btn-edit">Editar</a>
+                        <a href="{% url 'core:painel_category_deletar' cat.pk %}" class="btn-action btn-delete">Deletar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p class="empty-state-text">Nenhuma categoria criada ainda.</p>
+        <a href="{% url 'core:painel_category_criar' %}" class="btn-primary">Criar primeira categoria</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

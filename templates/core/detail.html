@@ -33,4 +33,10 @@
         </div>
     </footer>
 </article>
+
+{% if user.is_staff and user == post.author %}
+<a href="{% url 'core:painel_post_editar' post.slug %}" class="edit-fab" id="edit-fab" title="Editar post">
+    &#9998; Editar
+</a>
+{% endif %}
 {% endblock %}

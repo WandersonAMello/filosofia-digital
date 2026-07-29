@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Painel | Filosofia Digital{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="painel-body">
+
+    <header class="painel-header" id="painel-header">
+        <div class="painel-header-inner">
+            <a href="{% url 'core:painel_dashboard' %}" class="painel-logo">
+                <span class="painel-logo-icon">✦</span> Painel
+            </a>
+            <nav class="painel-nav" id="painel-nav">
+                <a href="{% url 'core:painel_dashboard' %}" class="painel-nav-link {% block nav_posts %}{% endblock %}">Posts</a>
+                <a href="{% url 'core:painel_category_list' %}" class="painel-nav-link {% block nav_cats %}{% endblock %}">Categorias</a>
+                <a href="{% url 'core:post_list' %}" class="painel-nav-link" target="_blank">Ver Blog ↗</a>
+                <div class="painel-user-menu">
+                    <span class="user-badge" title="Conectado como {{ user.username }}">
+                        👤 {{ user.first_name|default:user.username }}
+                    </span>
+                    <form action="{% url 'core:logout' %}" method="post" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout" title="Encerrar sessão">Sair</button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="messages-container" id="messages-container">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}" role="alert">
+            {{ message }}
+            <button class="message-close" onclick="this.parentElement.remove()" aria-label="Fechar">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="painel-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="painel-footer">
+        <p>Filosofia Digital — Painel do Autor</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "core/painel/base_painel.html" %}
+
+{% block title %}Deletar Categoria | Filosofia Digital{% endblock %}
+{% block nav_cats %}active{% endblock %}
+
+{% block content %}
+<div class="painel-page">
+    <div class="confirm-delete-card">
+        <div class="confirm-delete-icon">⚠️</div>
+        <h1 class="confirm-delete-title">Deletar Categoria</h1>
+        <p class="confirm-delete-text">
+            Tem certeza que deseja deletar a categoria
+            <strong>"{{ object.name }}"</strong>?
+            Os posts nessa categoria <strong>não serão deletados</strong>,
+            mas ficarão sem categoria.
+        </p>
+        <form method="post" class="confirm-delete-form" id="confirm-delete-category-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger" id="btn-confirmar-delete-cat">Sim, deletar</button>
+            <a href="{% url 'core:painel_category_list' %}" class="btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

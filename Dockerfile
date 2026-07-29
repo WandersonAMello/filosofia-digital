@@ -1,9 +1,9 @@
 FROM python:3.13-slim
 
-# Instala o uv
+# Copia o binário do uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Instala dependências do sistema para Pillow e PostgreSQL
+# Dependências de sistema necessárias para Pillow e PostgreSQL
 RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     zlib1g-dev \
@@ -13,19 +13,25 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copia arquivos de dependência
-COPY pyproject.toml uv.lock ./
+# Cria usuário não-root por segurança
+RUN addgroup --system appgroup && adduser --system --group appuser
 
-# Instala as dependências no sistema do container (evita problemas de PATH com venv)
+# Copia e instala dependências
+COPY pyproject.toml uv.lock ./
 RUN uv pip install --system --no-cache -r pyproject.toml
 
-# Copia o código
+# Copia o código da aplicação
 COPY . .
 
-# Coleta arquivos estáticos (usando uma chave temporária para a build)
+# Ajusta permissões dos diretórios estáticos e mídia
+RUN mkdir -p /app/staticfiles /app/media && \
+    chown -R appuser:appgroup /app
+
+# Coleta estáticos
 RUN SECRET_KEY=build-key python manage.py collectstatic --noinput
+
+USER appuser
 
 EXPOSE 8000
 
-# Executa com Gunicorn para produção
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "config.wsgi:application"]

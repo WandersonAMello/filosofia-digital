@@ -8,12 +8,18 @@ services:
       - POSTGRES_DB=filosofia_db
       - POSTGRES_USER=filosofia_user
       - POSTGRES_PASSWORD=filosofia_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U filosofia_user -d filosofia_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - sansocrates_network
 
   web:
     build: .
     container_name: sansocrates_blog
+    command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 --workers 3 config.wsgi:application"
     volumes:
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
@@ -22,7 +28,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: always
     networks:
       - sansocrates_network

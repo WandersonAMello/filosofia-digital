@@ -1,0 +1,58 @@
+{% extends "core/painel/base_painel.html" %}
+
+{% block title %}{% if object %}Editar Categoria{% else %}Nova Categoria{% endif %} | Filosofia Digital{% endblock %}
+{% block nav_cats %}active{% endblock %}
+
+{% block content %}
+<div class="painel-page">
+    <div class="painel-page-header">
+        <h1 class="painel-page-title">
+            {% if object %}Editar Categoria{% else %}Nova Categoria{% endif %}
+        </h1>
+        <a href="{% url 'core:painel_category_list' %}" class="btn-secondary">← Voltar</a>
+    </div>
+
+    <div class="form-card">
+        <form method="post" class="category-form" id="category-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Nome</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <span class="form-error">{{ form.name.errors.0 }}</span>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.slug.id_for_label }}">Slug</label>
+                {{ form.slug }}
+                {% if form.slug.errors %}
+                <span class="form-error">{{ form.slug.errors.0 }}</span>
+                {% endif %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="btn-salvar-categoria">Salvar</button>
+                <a href="{% url 'core:painel_category_list' %}" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const nameInput = document.getElementById('{{ form.name.id_for_label }}');
+const slugInput = document.getElementById('{{ form.slug.id_for_label }}');
+let slugManual = slugInput.value.length > 0;
+
+nameInput.addEventListener('input', function () {
+    if (!slugManual) {
+        slugInput.value = this.value
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim().replace(/\s+/g, '-');
+    }
+});
+slugInput.addEventListener('input', function () {
+    slugManual = this.value.length > 0;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Filosofia Digital</title>
+    <meta name="description" content="Área restrita do autor — Filosofia Digital">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="login-body">
+    <main class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <a href="{% url 'core:post_list' %}" class="login-logo">Filosofia Digital</a>
+                <p class="login-subtitle">Área do Autor</p>
+            </div>
+
+            <form method="post" class="login-form" id="login-form">
+                {% csrf_token %}
+                {% if form.errors %}
+                <div class="login-error" role="alert">
+                    Por favor, informe um usuário e senha corretos. Note que ambos os campos
+                    são sensíveis a maiúsculas e minúsculas.
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <label for="id_username">Usuário</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Senha</label>
+                    {{ form.password }}
+                </div>
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="btn-primary btn-full" id="login-submit">Entrar</button>
+            </form>
+
+            <div class="login-footer">
+                <a href="{% url 'core:post_list' %}">← Voltar ao blog</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

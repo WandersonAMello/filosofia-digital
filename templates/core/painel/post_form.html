@@ -1,0 +1,323 @@
+{% extends "core/painel/base_painel.html" %}
+
+{% block title %}{{ titulo_pagina }} | Filosofia Digital{% endblock %}
+{% block nav_posts %}active{% endblock %}
+
+{% block extra_head %}
+<!-- marked.js para preview Markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="painel-page painel-editor">
+
+    <div class="painel-page-header">
+        <div>
+            <h1 class="painel-page-title">{{ titulo_pagina }}</h1>
+        </div>
+        <a href="{% url 'core:painel_dashboard' %}" class="btn-secondary">← Voltar</a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="post-editor-form" id="post-form">
+        {% csrf_token %}
+
+        <div class="editor-layout">
+
+            <!-- Coluna Principal: Conteúdo -->
+            <div class="editor-main">
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Título</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <span class="form-error">{{ form.title.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.slug.id_for_label }}">
+                        Slug
+                        <span class="form-hint">(auto-gerado do título se vazio)</span>
+                    </label>
+                    {{ form.slug }}
+                    {% if form.slug.errors %}
+                    <span class="form-error">{{ form.slug.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group form-group--editor">
+                    <div class="editor-header-bar">
+                        <div class="editor-tabs">
+                            <button type="button" class="editor-tab active" id="tab-editor" onclick="switchTab('editor')">Markdown</button>
+                            <button type="button" class="editor-tab" id="tab-preview" onclick="switchTab('preview')">Preview</button>
+                        </div>
+                        <button type="button" class="btn-help-markdown" onclick="toggleMarkdownHelp(true)" title="Guia de Ajuda Markdown">
+                            ❓ Ajuda Markdown
+                        </button>
+                    </div>
+
+                    <!-- Toolbar de Formatação Markdown -->
+                    <div class="markdown-toolbar" id="markdown-toolbar">
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('bold')" title="Negrito (**texto**)"><b>B</b></button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('italic')" title="Itálico (*texto*)"><i>I</i></button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('h2')" title="Título Nível 2 (## Título)">H2</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('h3')" title="Título Nível 3 (### Título)">H3</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('quote')" title="Citação de Texto (> Citação)">”</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('code')" title="Bloco de Código (```código```)">&lt;/&gt;</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('list')" title="Lista de Tópicos (- item)">• Lista</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('link')" title="Inserir Link ([texto](url))">🔗 Link</button>
+                        <button type="button" class="toolbar-btn" onclick="insertMarkdown('image')" title="Inserir Imagem (![alt](url))">🖼️ Imagem</button>
+                    </div>
+
+                    <div id="editor-pane">
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                        <span class="form-error">{{ form.content.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div id="preview-pane" class="post-content markdown-preview" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Coluna Lateral: Metadados -->
+            <aside class="editor-sidebar">
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-card-title">Publicação</h3>
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}">Status</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="sidebar-actions">
+                        <button type="submit" name="status" value="draft" class="btn-secondary btn-full" id="btn-salvar-rascunho">
+                            Salvar Rascunho
+                        </button>
+                        <button type="submit" class="btn-primary btn-full" id="btn-publicar">
+                            {% if form.instance.pk %}Atualizar{% else %}Publicar{% endif %}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-card-title">Resumo</h3>
+                    <div class="form-group">
+                        {{ form.summary }}
+                        {% if form.summary.errors %}
+                        <span class="form-error">{{ form.summary.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-card-title">Categoria</h3>
+                    <div class="form-group">
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                        <span class="form-error">{{ form.category.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-card-title">Imagem de Capa</h3>
+                    <div class="form-group">
+                        {% if form.instance.image %}
+                        <div class="current-image-wrapper">
+                            <img src="{{ form.instance.image.url }}" alt="Capa atual" class="image-preview">
+                            <span class="image-filename">{{ form.instance.image.name }}</span>
+                        </div>
+                        {% endif %}
+                        {{ form.image }}
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+    </form>
+
+</div>
+
+<!-- Modal de Ajuda Markdown -->
+<div class="modal-backdrop" id="markdown-help-modal" style="display: none;" onclick="if(event.target===this) toggleMarkdownHelp(false)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>📖 Guia Rápido de Formatação Markdown</h3>
+            <button type="button" class="modal-close-btn" onclick="toggleMarkdownHelp(false)">✕</button>
+        </div>
+        <div class="modal-body">
+            <p>Escreva seu ensaio filosófico usando a sintaxe simples do Markdown abaixo:</p>
+            <table class="help-table">
+                <thead>
+                    <tr>
+                        <th>Recurso</th>
+                        <th>Sintaxe Markdown</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Negrito</b></td>
+                        <td><code>**texto em negrito**</code></td>
+                        <td><strong>texto em negrito</strong></td>
+                    </tr>
+                    <tr>
+                        <td><i>Itálico</i></td>
+                        <td><code>*texto em itálico*</code></td>
+                        <td><em>texto em itálico</em></td>
+                    </tr>
+                    <tr>
+                        <td>Título 2</td>
+                        <td><code>## Cabeçalho Principal</code></td>
+                        <td><h4 style="margin:0;">Cabeçalho Principal</h4></td>
+                    </tr>
+                    <tr>
+                        <td>Título 3</td>
+                        <td><code>### Subtítulo da Seção</code></td>
+                        <td><h5 style="margin:0;">Subtítulo da Seção</h5></td>
+                    </tr>
+                    <tr>
+                        <td>Citação</td>
+                        <td><code>> "Penso, logo existo." - Descartes</code></td>
+                        <td><blockquote style="margin:0; padding-left: 8px; border-left: 3px solid var(--accent); color: var(--text-muted);">"Penso, logo existo."</blockquote></td>
+                    </tr>
+                    <tr>
+                        <td>Lista com Marcadores</td>
+                        <td><code>- Primeiro item<br>- Segundo item</code></td>
+                        <td><ul style="margin:0; padding-left: 16px;"><li>Primeiro item</li><li>Segundo item</li></ul></td>
+                    </tr>
+                    <tr>
+                        <td>Bloco de Código</td>
+                        <td><code>```python<br>print("Olá Filosofia")<br>```</code></td>
+                        <td><code style="background: var(--bg-card); padding: 2px 4px;">código destacado</code></td>
+                    </tr>
+                    <tr>
+                        <td>Link</td>
+                        <td><code>[Título do Link](https://site.com)</code></td>
+                        <td><a href="#" onclick="return false;">Título do Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>Imagem</td>
+                        <td><code>![Legenda da Imagem](https://url-da-imagem.jpg)</code></td>
+                        <td><i>[Imagem incorporada]</i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-primary" onclick="toggleMarkdownHelp(false)">Entendido</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-gera slug a partir do título
+const titleInput = document.getElementById('{{ form.title.id_for_label }}');
+const slugInput = document.getElementById('{{ form.slug.id_for_label }}');
+let slugManual = slugInput.value.length > 0;
+
+titleInput.addEventListener('input', function () {
+    if (!slugManual) {
+        slugInput.value = this.value
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim().replace(/\s+/g, '-');
+    }
+});
+slugInput.addEventListener('input', function () {
+    slugManual = this.value.length > 0;
+});
+
+// Preview de Markdown
+function switchTab(tab) {
+    const editorPane = document.getElementById('editor-pane');
+    const previewPane = document.getElementById('preview-pane');
+    const tabEditor = document.getElementById('tab-editor');
+    const tabPreview = document.getElementById('tab-preview');
+    const toolbar = document.getElementById('markdown-toolbar');
+    const contentTA = document.getElementById('{{ form.content.id_for_label }}');
+
+    if (tab === 'preview') {
+        previewPane.innerHTML = marked.parse(contentTA.value || '_Nada para exibir._');
+        editorPane.style.display = 'none';
+        previewPane.style.display = 'block';
+        if (toolbar) toolbar.style.display = 'none';
+        tabEditor.classList.remove('active');
+        tabPreview.classList.add('active');
+    } else {
+        editorPane.style.display = 'block';
+        previewPane.style.display = 'none';
+        if (toolbar) toolbar.style.display = 'flex';
+        tabEditor.classList.add('active');
+        tabPreview.classList.remove('active');
+    }
+}
+
+// Inserção de Markdown via Toolbar
+function insertMarkdown(type) {
+    const textarea = document.getElementById('{{ form.content.id_for_label }}');
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+
+    let replacement = '';
+    let cursorOffset = 0;
+
+    switch (type) {
+        case 'bold':
+            replacement = `**${selectedText || 'texto em negrito'}**`;
+            cursorOffset = selectedText ? replacement.length : 2;
+            break;
+        case 'italic':
+            replacement = `*${selectedText || 'texto em itálico'}*`;
+            cursorOffset = selectedText ? replacement.length : 1;
+            break;
+        case 'h2':
+            replacement = `\n## ${selectedText || 'Título da Seção'}\n`;
+            cursorOffset = replacement.length;
+            break;
+        case 'h3':
+            replacement = `\n### ${selectedText || 'Subtítulo'}\n`;
+            cursorOffset = replacement.length;
+            break;
+        case 'quote':
+            replacement = `\n> ${selectedText || 'Citação filosófica...'}\n`;
+            cursorOffset = replacement.length;
+            break;
+        case 'code':
+            replacement = selectedText.includes('\n') 
+                ? `\n\`\`\`\n${selectedText}\n\`\`\`\n` 
+                : `\`${selectedText || 'código'}\``;
+            cursorOffset = replacement.length;
+            break;
+        case 'list':
+            replacement = `\n- ${selectedText || 'Item da lista'}\n`;
+            cursorOffset = replacement.length;
+            break;
+        case 'link':
+            replacement = `[${selectedText || 'Texto do link'}](https://exemplo.com)`;
+            cursorOffset = replacement.length;
+            break;
+        case 'image':
+            replacement = `![${selectedText || 'Descrição da imagem'}](https://exemplo.com/imagem.png)`;
+            cursorOffset = replacement.length;
+            break;
+    }
+
+    textarea.setRangeText(replacement, start, end, 'select');
+    textarea.focus();
+    textarea.selectionStart = start + cursorOffset;
+    textarea.selectionEnd = start + cursorOffset;
+}
+
+// Abrir e fechar modal de ajuda
+function toggleMarkdownHelp(show) {
+    const modal = document.getElementById('markdown-help-modal');
+    if (modal) {
+        modal.style.display = show ? 'flex' : 'none';
+    }
+}
+</script>
+{% endblock %}
